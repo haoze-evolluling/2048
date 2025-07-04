@@ -1,0 +1,22 @@
+{
+  "name": "2048",
+  "version": "2.0.206",
+  "description": "这是一个基于 `HTML`、`CSS` 和 `JavaScript` 实现的经典 2048 游戏。",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haoze-evolluling/2048.git"
+  },
+  "author": "Haoze",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/haoze-evolluling/2048/issues"
+  },
+  "homepage": "https://github.com/haoze-evolluling/2048#readme",
+  "devDependencies": {
+    "electron": "^37.2.0"
+  }
+}
