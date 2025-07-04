@@ -4,7 +4,9 @@
   "description": "这是一个基于 `HTML`、`CSS` 和 `JavaScript` 实现的经典 2048 游戏。",
   "main": "index.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder --win",
+    "dist": "electron-builder"
   },
   "repository": {
     "type": "git",
@@ -17,6 +19,40 @@
   },
   "homepage": "https://github.com/haoze-evolluling/2048#readme",
   "devDependencies": {
-    "electron": "^37.2.0"
+    "electron": "^37.2.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.haoze.2048",
+    "productName": "2048 Game",
+    "directories": {
+      "output": "build"
+    },
+    "win": {
+      "icon": "icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true,
+      "perMachine": true,
+      "allowElevation": true,
+      "installerIcon": "icon.ico",
+      "uninstallerIcon": "icon.ico"
+    },
+    "files": [
+      "**/*",
+      "!build/**/*"
+    ]
   }
 }
