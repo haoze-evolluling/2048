@@ -1,4 +1,4 @@
-console.log("Hello World");
+console.log("Hello 2048");
 const {app, BrowserWindow} = require('electron');
 
 app.on ('ready', () => {
