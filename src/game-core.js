@@ -7,6 +7,7 @@ export class Game2048 {
         this.score = 0;
         this.bestScore = 0;
         this.isGameOver = false;
+        this.isWon = false;
 
         // 撤销功能相关属性
         this.previousState = null;
@@ -21,6 +22,7 @@ export class Game2048 {
         this.grid = Array(this.GRID_SIZE).fill().map(() => Array(this.GRID_SIZE).fill(this.EMPTY_CELL));
         this.score = 0;
         this.isGameOver = false;
+        this.isWon = false;
 
         // 重置撤销相关状态
         this.previousState = null;
@@ -35,6 +37,7 @@ export class Game2048 {
             score: this.score,
             bestScore: this.bestScore,
             isGameOver: this.isGameOver,
+            isWon: this.isWon,
             canUndo: this.canUndo
         };
     }
@@ -255,7 +258,7 @@ export class Game2048 {
                 }
             }
         }
-        
+
         // 检查水平方向是否有相邻的相同方块
         for (let i = 0; i < this.GRID_SIZE; i++) {
             for (let j = 0; j < this.GRID_SIZE - 1; j++) {
@@ -264,7 +267,7 @@ export class Game2048 {
                 }
             }
         }
-        
+
         // 检查垂直方向是否有相邻的相同方块
         for (let i = 0; i < this.GRID_SIZE - 1; i++) {
             for (let j = 0; j < this.GRID_SIZE; j++) {
@@ -273,9 +276,62 @@ export class Game2048 {
                 }
             }
         }
-        
+
         // 如果以上条件都不满足，则无法移动
         return false;
+    }
+
+    // 检查是否胜利（达到2048）
+    checkWin() {
+        if (this.isWon) return false; // 已经胜利过了，不再检查
+
+        for (let i = 0; i < this.GRID_SIZE; i++) {
+            for (let j = 0; j < this.GRID_SIZE; j++) {
+                if (this.grid[i][j] === 2048) {
+                    this.isWon = true;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // 强制胜利（右键点击标题时调用）
+    forceWin() {
+        if (this.isWon) return false; // 已经胜利过了，不再触发
+
+        // 在网格中找到一个空位置或最小值位置放置2048
+        let placed = false;
+
+        // 首先尝试找空位置
+        for (let i = 0; i < this.GRID_SIZE && !placed; i++) {
+            for (let j = 0; j < this.GRID_SIZE && !placed; j++) {
+                if (this.grid[i][j] === this.EMPTY_CELL) {
+                    this.grid[i][j] = 2048;
+                    placed = true;
+                }
+            }
+        }
+
+        // 如果没有空位置，替换最小的非空方块
+        if (!placed) {
+            let minValue = Infinity;
+            let minPos = { row: 0, col: 0 };
+
+            for (let i = 0; i < this.GRID_SIZE; i++) {
+                for (let j = 0; j < this.GRID_SIZE; j++) {
+                    if (this.grid[i][j] < minValue && this.grid[i][j] !== this.EMPTY_CELL) {
+                        minValue = this.grid[i][j];
+                        minPos = { row: i, col: j };
+                    }
+                }
+            }
+
+            this.grid[minPos.row][minPos.col] = 2048;
+        }
+
+        this.isWon = true;
+        return true;
     }
 
     // 游戏结束
@@ -349,6 +405,7 @@ export class Game2048 {
             score: this.score,
             bestScore: this.bestScore,
             isGameOver: this.isGameOver,
+            isWon: this.isWon,
             canUndo: this.canUndo
         };
     }

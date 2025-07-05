@@ -19,6 +19,10 @@ export class UIManager {
         this.bestScoreElement = document.getElementById('best-score');
         this.gameOverElement = document.getElementById('game-over');
         this.finalScoreElement = document.getElementById('final-score');
+        this.gameVictoryElement = document.getElementById('game-victory');
+        this.victoryScoreElement = document.getElementById('victory-score');
+        this.continueGameButton = document.getElementById('continue-game');
+        this.newGameVictoryButton = document.getElementById('new-game-victory');
         this.newGameButton = document.getElementById('new-game');
         this.retryButton = document.getElementById('retry');
         this.undoButton = document.getElementById('undo-button');
@@ -50,8 +54,9 @@ export class UIManager {
             }
         }
         
-        // 隐藏游戏结束界面
+        // 隐藏游戏结束界面和胜利界面
         this.gameOverElement.style.display = 'none';
+        this.gameVictoryElement.style.display = 'none';
 
         // 添加游戏板加载动画
         this.gameBoard.classList.add('board-load');
@@ -105,6 +110,12 @@ export class UIManager {
         this.gameTitle.addEventListener('click', () => {
             this.addTitleClickEffect();
             this.openBackgroundModal();
+        });
+
+        // 添加标题右键点击事件（直接胜利）
+        this.gameTitle.addEventListener('contextmenu', (event) => {
+            event.preventDefault(); // 阻止默认右键菜单
+            this.handleTitleRightClick();
         });
         
         // 添加关闭按钮事件
@@ -191,6 +202,24 @@ export class UIManager {
             this.gameTitle.style.transform = '';
             this.gameTitle.style.textShadow = '';
         }, 200);
+    }
+
+    // 处理标题右键点击（直接胜利）
+    handleTitleRightClick() {
+        // 添加特殊的右键点击效果
+        this.gameTitle.style.transform = 'scale(1.1) rotate(5deg)';
+        this.gameTitle.style.textShadow = '0 0 30px rgba(255, 215, 0, 1)';
+        this.gameTitle.style.color = '#FFD700';
+
+        setTimeout(() => {
+            this.gameTitle.style.transform = '';
+            this.gameTitle.style.textShadow = '';
+            this.gameTitle.style.color = '';
+        }, 300);
+
+        // 触发自定义事件，通知主控制器执行强制胜利
+        const forceWinEvent = new CustomEvent('forceWin');
+        document.dispatchEvent(forceWinEvent);
     }
 
     // 打开背景选择模态框 - 移除动画效果
@@ -485,6 +514,94 @@ export class UIManager {
             this.gameOverElement.style.display = 'flex';
             this.finalScoreElement.textContent = finalScore;
         }, 500);
+    }
+
+    // 显示胜利界面
+    showVictory(score) {
+        // 显示烟花动画
+        this.showFireworks();
+
+        setTimeout(() => {
+            this.gameVictoryElement.style.display = 'flex';
+            this.victoryScoreElement.textContent = score;
+        }, 300);
+    }
+
+    // 隐藏胜利界面
+    hideVictory() {
+        this.gameVictoryElement.style.display = 'none';
+    }
+
+    // 显示烟花动画
+    showFireworks() {
+        const fireworksContainer = document.createElement('div');
+        fireworksContainer.className = 'fireworks';
+        document.body.appendChild(fireworksContainer);
+
+        const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
+
+        // 创建多个烟花
+        for (let i = 0; i < 8; i++) {
+            setTimeout(() => {
+                this.createFirework(fireworksContainer, colors);
+            }, i * 200);
+        }
+
+        // 5秒后移除烟花容器
+        setTimeout(() => {
+            if (fireworksContainer.parentNode) {
+                fireworksContainer.parentNode.removeChild(fireworksContainer);
+            }
+        }, 5000);
+    }
+
+    // 创建单个烟花
+    createFirework(container, colors) {
+        const firework = document.createElement('div');
+        firework.className = `firework firework-${colors[Math.floor(Math.random() * colors.length)]}`;
+
+        // 随机位置
+        firework.style.left = Math.random() * 100 + '%';
+
+        container.appendChild(firework);
+
+        // 烟花爆炸效果
+        setTimeout(() => {
+            this.createFireworkParticles(container, firework, colors);
+            firework.remove();
+        }, 750);
+    }
+
+    // 创建烟花粒子
+    createFireworkParticles(container, firework, colors) {
+        const rect = firework.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        // 创建多个粒子
+        for (let i = 0; i < 12; i++) {
+            const particle = document.createElement('div');
+            particle.className = `firework-particle firework-${colors[Math.floor(Math.random() * colors.length)]}`;
+
+            const angle = (i / 12) * Math.PI * 2;
+            const distance = 50 + Math.random() * 50;
+            const dx = Math.cos(angle) * distance;
+            const dy = Math.sin(angle) * distance;
+
+            particle.style.left = centerX + 'px';
+            particle.style.top = centerY + 'px';
+            particle.style.setProperty('--dx', dx + 'px');
+            particle.style.setProperty('--dy', dy + 'px');
+
+            container.appendChild(particle);
+
+            // 1秒后移除粒子
+            setTimeout(() => {
+                if (particle.parentNode) {
+                    particle.parentNode.removeChild(particle);
+                }
+            }, 1000);
+        }
     }
 
     // 检查背景模态框是否打开

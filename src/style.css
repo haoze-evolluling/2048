@@ -280,6 +280,167 @@ button:active {
     font-size: 18px;
 }
 
+/* 胜利界面样式 */
+.game-victory {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(21, 101, 192, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+
+.game-victory-message {
+    background-color: white;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    border: 3px solid #1565C0;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-victory-message::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+    animation: shine 2s infinite;
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.game-victory-message h2 {
+    color: #1565C0;
+    margin-bottom: 20px;
+    font-size: 28px;
+    text-shadow: 0 2px 4px rgba(21, 101, 192, 0.3);
+}
+
+.game-victory-message p {
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #34495e;
+}
+
+.game-victory-message strong {
+    color: #1565C0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.victory-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.victory-buttons button {
+    margin-bottom: 0;
+    min-width: 120px;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+#continue-game {
+    background-color: #4CAF50;
+    box-shadow: 0 4px 6px rgba(76, 175, 80, 0.2);
+}
+
+#continue-game:hover {
+    background-color: #45a049;
+    box-shadow: 0 6px 12px rgba(76, 175, 80, 0.3);
+}
+
+#new-game-victory {
+    background-color: #1565C0;
+    box-shadow: 0 4px 6px rgba(21, 101, 192, 0.2);
+}
+
+#new-game-victory:hover {
+    background-color: #0D47A1;
+    box-shadow: 0 6px 12px rgba(21, 101, 192, 0.3);
+}
+
+/* 烟花动画效果 */
+.fireworks {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.firework {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    animation: firework 1.5s ease-out forwards;
+}
+
+@keyframes firework {
+    0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 1;
+    }
+    15% {
+        transform: translateY(50vh) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(50vh) scale(0);
+        opacity: 0;
+    }
+}
+
+.firework-particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    animation: particle 1s ease-out forwards;
+}
+
+@keyframes particle {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0) translate(var(--dx), var(--dy));
+        opacity: 0;
+    }
+}
+
+/* 烟花颜色变化 */
+.firework-red { background-color: #ff4757; }
+.firework-blue { background-color: #3742fa; }
+.firework-green { background-color: #2ed573; }
+.firework-yellow { background-color: #ffa502; }
+.firework-purple { background-color: #a55eea; }
+.firework-orange { background-color: #ff6348; }
+
 .instructions {
     color: #7f8c8d;
     font-size: 14px;

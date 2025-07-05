@@ -35,6 +35,11 @@ function handleUndo() {
     }
 }
 
+// 处理继续游戏操作
+function handleContinueGame() {
+    uiManager.hideVictory();
+}
+
 // 处理键盘事件
 function handleKeyPress(event) {
     if (game.isGameOver) return;
@@ -111,6 +116,12 @@ function handleMoveResult(moveResult) {
         // 更新撤销按钮状态
         uiManager.updateUndoButton(gameState.canUndo);
 
+        // 检查是否胜利
+        if (game.checkWin()) {
+            uiManager.showVictory(gameState.score);
+            return; // 胜利后不检查游戏结束
+        }
+
         // 检查游戏是否结束
         if (!game.canMove()) {
             const gameOverResult = game.gameOver();
@@ -154,19 +165,43 @@ function handleSwipe(direction) {
     }
 }
 
+// 处理强制胜利
+function handleForceWin() {
+    if (game.isGameOver || game.isWon) return; // 游戏已结束或已胜利，不处理
+
+    // 调用游戏核心的强制胜利方法
+    const winResult = game.forceWin();
+
+    if (winResult) {
+        // 更新UI显示新的2048方块
+        const gameState = game.getGameState();
+        uiManager.updateUI(gameState.grid);
+
+        // 显示胜利界面
+        uiManager.showVictory(gameState.score);
+    }
+}
+
 // 事件监听器设置
 function setupEventListeners() {
     // 键盘事件
     document.addEventListener('keydown', handleKeyPress);
 
+    // 强制胜利事件（右键点击标题）
+    document.addEventListener('forceWin', handleForceWin);
+
     // 按钮事件
     const newGameButton = document.getElementById('new-game');
     const retryButton = document.getElementById('retry');
     const undoButton = document.getElementById('undo-button');
+    const continueGameButton = document.getElementById('continue-game');
+    const newGameVictoryButton = document.getElementById('new-game-victory');
 
     newGameButton.addEventListener('click', initializeGame);
     retryButton.addEventListener('click', initializeGame);
     undoButton.addEventListener('click', handleUndo);
+    continueGameButton.addEventListener('click', handleContinueGame);
+    newGameVictoryButton.addEventListener('click', initializeGame);
 
     // 触摸滑动事件
     uiManager.setupTouchEvents(handleSwipe);
