@@ -1,5 +1,5 @@
 // 2048游戏核心逻辑类
-export class Game2048 {
+class Game2048 {
     constructor() {
         this.GRID_SIZE = 4;
         this.EMPTY_CELL = 0;

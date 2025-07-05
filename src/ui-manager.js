@@ -1,5 +1,5 @@
 // UI管理和背景控制类
-export class UIManager {
+class UIManager {
     constructor() {
         // 背景图片
         this.backgroundImages = [

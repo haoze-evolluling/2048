@@ -1,6 +1,4 @@
-// 导入游戏核心逻辑和UI管理模块
-import { Game2048 } from './game-core.js';
-import { UIManager } from './ui-manager.js';
+// 游戏核心逻辑和UI管理模块已通过script标签加载
 
 // 全局游戏实例
 let game;
