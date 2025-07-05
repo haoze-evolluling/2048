@@ -118,16 +118,7 @@ h1:hover::after {
     transition: all 0.3s ease;
 }
 
-/* 分数变化动画 */
-.score-change {
-    animation: scoreChange 0.6s ease;
-}
-
-@keyframes scoreChange {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); color: #ffeb3b; }
-    100% { transform: scale(1); }
-}
+/* 分数变化动画 - 在animation.css中定义了更好的版本 */
 
 /* 游戏按钮 */
 button {
@@ -316,7 +307,7 @@ button:active {
     transform: translateY(-2px);
 }
 
-/* 背景选择器弹出式样式 */
+/* 背景选择器弹出式样式 - 移除动画效果 */
 .background-modal {
     position: fixed;
     top: 0;
@@ -329,12 +320,6 @@ button:active {
     align-items: center;
     z-index: 1000;
     display: none;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.background-modal.show {
-    opacity: 1;
 }
 
 .background-modal-content {
@@ -344,12 +329,6 @@ button:active {
     width: 90%;
     max-width: 400px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    transform: scale(0.8);
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.background-modal.show .background-modal-content {
-    transform: scale(1);
 }
 
 .modal-header {
@@ -455,25 +434,7 @@ button:active {
     transform: scale(1.1);
 }
 
-/* 动画效果 */
-@keyframes appear {
-    0% { opacity: 0; transform: scale(0); }
-    100% { opacity: 1; transform: scale(1); }
-}
-
-@keyframes merge {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-}
-
-.tile-new {
-    animation: appear 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.tile-merged {
-    animation: merge 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
+/* 动画效果 - 在animation.css中定义了更好的版本 */
 
 /* 游戏板震动动画 */
 @keyframes shake {

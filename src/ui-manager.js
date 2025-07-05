@@ -52,12 +52,24 @@ export class UIManager {
         
         // 隐藏游戏结束界面
         this.gameOverElement.style.display = 'none';
-        
-        // 添加游戏板出现动画
-        this.gameBoard.classList.add('fadeIn');
+
+        // 添加游戏板加载动画
+        this.gameBoard.classList.add('board-load');
         setTimeout(() => {
-            this.gameBoard.classList.remove('fadeIn');
-        }, 500);
+            this.gameBoard.classList.remove('board-load');
+        }, 600);
+
+        // 为每个方块添加延迟出现动画
+        const tiles = this.gameBoard.querySelectorAll('.tile');
+        tiles.forEach((tile, index) => {
+            tile.style.opacity = '0';
+            tile.style.transform = 'scale(0)';
+            setTimeout(() => {
+                tile.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                tile.style.opacity = '1';
+                tile.style.transform = 'scale(1)';
+            }, index * 30);
+        });
     }
 
     // 初始化背景选择器
@@ -89,8 +101,11 @@ export class UIManager {
         // 设置初始背景
         this.loadSavedBackground();
         
-        // 添加标题点击事件
-        this.gameTitle.addEventListener('click', () => this.openBackgroundModal());
+        // 添加标题点击事件和特效
+        this.gameTitle.addEventListener('click', () => {
+            this.addTitleClickEffect();
+            this.openBackgroundModal();
+        });
         
         // 添加关闭按钮事件
         this.closeModalButton.addEventListener('click', () => this.closeBackgroundModal());
@@ -110,36 +125,82 @@ export class UIManager {
     addButtonEffects() {
         const buttons = document.querySelectorAll('button');
         buttons.forEach(button => {
-            button.addEventListener('mousedown', () => {
+            // 添加波纹效果类
+            button.classList.add('btn-ripple');
+
+            // 点击反馈效果
+            button.addEventListener('mousedown', (e) => {
                 button.classList.add('clicked');
+                this.createRippleEffect(button, e);
             });
-            
+
             button.addEventListener('mouseup', () => {
                 button.classList.remove('clicked');
             });
-            
+
             button.addEventListener('mouseleave', () => {
                 button.classList.remove('clicked');
             });
+
+            // 添加悬浮时的脉冲效果（仅对主要按钮）
+            if (button.id === 'new-game') {
+                button.addEventListener('mouseenter', () => {
+                    button.classList.add('btn-pulse');
+                });
+
+                button.addEventListener('mouseleave', () => {
+                    button.classList.remove('btn-pulse');
+                });
+            }
         });
     }
 
-    // 打开背景选择模态框
-    openBackgroundModal() {
-        this.backgroundModal.style.display = 'flex';
-        // 添加淡入动画
+    // 创建波纹效果
+    createRippleEffect(button, event) {
+        const rect = button.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = event.clientX - rect.left - size / 2;
+        const y = event.clientY - rect.top - size / 2;
+
+        const ripple = document.createElement('span');
+        ripple.style.cssText = `
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            left: ${x}px;
+            top: ${y}px;
+            width: ${size}px;
+            height: ${size}px;
+        `;
+
+        button.appendChild(ripple);
+
         setTimeout(() => {
-            this.backgroundModal.classList.add('show');
-        }, 10);
+            ripple.remove();
+        }, 600);
     }
 
-    // 关闭背景选择模态框
-    closeBackgroundModal() {
-        this.backgroundModal.classList.remove('show');
-        // 等待动画完成后隐藏
+    // 添加标题点击效果
+    addTitleClickEffect() {
+        this.gameTitle.style.transform = 'scale(0.9) rotate(-2deg)';
+        this.gameTitle.style.textShadow = '0 0 20px rgba(21, 101, 192, 0.8)';
+
         setTimeout(() => {
-            this.backgroundModal.style.display = 'none';
-        }, 300);
+            this.gameTitle.style.transform = '';
+            this.gameTitle.style.textShadow = '';
+        }, 200);
+    }
+
+    // 打开背景选择模态框 - 移除动画效果
+    openBackgroundModal() {
+        this.backgroundModal.style.display = 'flex';
+    }
+
+    // 关闭背景选择模态框 - 移除动画效果
+    closeBackgroundModal() {
+        this.backgroundModal.style.display = 'none';
     }
 
     // 设置背景
@@ -193,32 +254,168 @@ export class UIManager {
             for (let j = 0; j < 4; j++) {
                 const tile = document.getElementById(`tile-${i}-${j}`);
                 const value = grid[i][j];
-                
+                const oldValue = tile.textContent;
+
                 // 更新方块的内容和样式
                 tile.textContent = value !== 0 ? value : '';
                 tile.className = 'tile';
-                
+
                 if (value !== 0) {
                     tile.classList.add(`tile-${value}`);
+
+                    // 添加方块点击效果
+                    this.addTileClickEffect(tile);
+
+                    // 移除方块更新动画效果
                 }
             }
+        }
+    }
+
+    // 为方块添加点击效果
+    addTileClickEffect(tile) {
+        // 移除之前的事件监听器（如果存在）
+        tile.removeEventListener('click', tile.clickHandler);
+
+        // 创建新的点击处理器
+        tile.clickHandler = () => {
+            if (tile.textContent !== '') {
+                this.createTileClickAnimation(tile);
+                this.showScoreParticle(tile);
+            }
+        };
+
+        // 添加点击事件监听器
+        tile.addEventListener('click', tile.clickHandler);
+    }
+
+    // 创建方块点击动画
+    createTileClickAnimation(tile) {
+        tile.style.transform = 'scale(0.9) rotate(5deg)';
+        tile.style.boxShadow = '0 0 20px rgba(255, 235, 59, 0.8)';
+
+        setTimeout(() => {
+            tile.style.transform = '';
+            tile.style.boxShadow = '';
+        }, 150);
+    }
+
+    // 显示分数粒子效果
+    showScoreParticle(tile) {
+        const value = parseInt(tile.textContent);
+        if (value >= 4) {
+            const particle = document.createElement('div');
+            particle.className = 'score-particle';
+            particle.textContent = `+${value}`;
+
+            const rect = tile.getBoundingClientRect();
+            const containerRect = this.gameBoard.getBoundingClientRect();
+
+            particle.style.left = `${rect.left - containerRect.left + rect.width / 2}px`;
+            particle.style.top = `${rect.top - containerRect.top}px`;
+
+            this.gameBoard.appendChild(particle);
+
+            setTimeout(() => {
+                particle.remove();
+            }, 1000);
         }
     }
 
     // 更新分数
     updateScore(score, bestScore) {
         const oldScore = parseInt(this.scoreElement.textContent);
+        const scoreDiff = score - oldScore;
+
         this.scoreElement.textContent = score;
 
         // 添加分数变化动画
         if (score > oldScore) {
             this.scoreElement.classList.add('score-change');
+
+            // 显示分数增加的数字动画
+            this.showScoreIncrease(scoreDiff);
+
             setTimeout(() => {
                 this.scoreElement.classList.remove('score-change');
-            }, 600);
+            }, 800);
         }
 
+        // 更新最高分
+        const oldBestScore = parseInt(this.bestScoreElement.textContent);
         this.bestScoreElement.textContent = bestScore;
+
+        // 如果最高分更新，添加特殊效果
+        if (bestScore > oldBestScore) {
+            this.bestScoreElement.classList.add('score-change');
+            this.showBestScoreFireworks();
+            setTimeout(() => {
+                this.bestScoreElement.classList.remove('score-change');
+            }, 800);
+        }
+    }
+
+    // 显示分数增加动画
+    showScoreIncrease(increase) {
+        const scoreBox = this.scoreElement.parentElement;
+        const increaseElement = document.createElement('div');
+        increaseElement.className = 'score-increase';
+        increaseElement.textContent = `+${increase}`;
+        increaseElement.style.cssText = `
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 14px;
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.8s ease-out;
+            pointer-events: none;
+            z-index: 10;
+        `;
+
+        scoreBox.style.position = 'relative';
+        scoreBox.appendChild(increaseElement);
+
+        // 触发动画
+        setTimeout(() => {
+            increaseElement.style.opacity = '0';
+            increaseElement.style.transform = 'translateY(-30px)';
+        }, 100);
+
+        setTimeout(() => {
+            increaseElement.remove();
+        }, 900);
+    }
+
+    // 显示最高分烟花效果
+    showBestScoreFireworks() {
+        const bestScoreBox = this.bestScoreElement.parentElement;
+
+        for (let i = 0; i < 6; i++) {
+            setTimeout(() => {
+                const firework = document.createElement('div');
+                firework.style.cssText = `
+                    position: absolute;
+                    width: 4px;
+                    height: 4px;
+                    background: #FFD700;
+                    border-radius: 50%;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    animation: firework 1s ease-out forwards;
+                    --angle: ${i * 60}deg;
+                `;
+
+                bestScoreBox.appendChild(firework);
+
+                setTimeout(() => {
+                    firework.remove();
+                }, 1000);
+            }, i * 100);
+        }
     }
 
     // 更新撤销按钮状态
@@ -233,12 +430,9 @@ export class UIManager {
         }
     }
 
-    // 显示撤销动画效果
+    // 显示撤销动画效果 - 移除彩色滤镜效果
     showUndoAnimation() {
-        this.gameBoard.classList.add('undo-animation');
-        setTimeout(() => {
-            this.gameBoard.classList.remove('undo-animation');
-        }, 300);
+        // 撤销动画已移除
     }
 
     // 显示最高分更新动画
