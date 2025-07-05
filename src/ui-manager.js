@@ -9,7 +9,8 @@ export class UIManager {
             'pic/back (4).png',
             'pic/back (5).png',
             'pic/back (6).png',
-            'pic/back (7).png'
+            'pic/back (7).png',
+            'pic/Star_Rail.png'
         ];
         this.currentBackground = 0;
         
