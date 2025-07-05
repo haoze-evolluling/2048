@@ -7,7 +7,11 @@ export class Game2048 {
         this.score = 0;
         this.bestScore = 0;
         this.isGameOver = false;
-        
+
+        // 撤销功能相关属性
+        this.previousState = null;
+        this.canUndo = false;
+
         this.loadBestScore();
     }
 
@@ -17,16 +21,21 @@ export class Game2048 {
         this.grid = Array(this.GRID_SIZE).fill().map(() => Array(this.GRID_SIZE).fill(this.EMPTY_CELL));
         this.score = 0;
         this.isGameOver = false;
-        
+
+        // 重置撤销相关状态
+        this.previousState = null;
+        this.canUndo = false;
+
         // 生成两个初始方块
         this.generateNewTile();
         this.generateNewTile();
-        
+
         return {
             grid: this.grid,
             score: this.score,
             bestScore: this.bestScore,
-            isGameOver: this.isGameOver
+            isGameOver: this.isGameOver,
+            canUndo: this.canUndo
         };
     }
 
@@ -301,13 +310,46 @@ export class Game2048 {
         }
     }
 
+    // 保存当前游戏状态（在移动之前调用）
+    saveCurrentState() {
+        this.previousState = {
+            grid: this.grid.map(row => [...row]), // 深拷贝网格
+            score: this.score
+        };
+        this.canUndo = true;
+    }
+
+    // 撤销到上一个状态
+    undo() {
+        if (!this.canUndo || !this.previousState) {
+            return false;
+        }
+
+        // 恢复上一个状态
+        this.grid = this.previousState.grid.map(row => [...row]); // 深拷贝网格
+        this.score = this.previousState.score;
+        this.isGameOver = false;
+
+        // 清除撤销状态
+        this.previousState = null;
+        this.canUndo = false;
+
+        return true;
+    }
+
+    // 检查是否可以撤销
+    getCanUndo() {
+        return this.canUndo;
+    }
+
     // 获取当前游戏状态
     getGameState() {
         return {
             grid: this.grid,
             score: this.score,
             bestScore: this.bestScore,
-            isGameOver: this.isGameOver
+            isGameOver: this.isGameOver,
+            canUndo: this.canUndo
         };
     }
 }

@@ -156,6 +156,45 @@ button:active {
     box-shadow: 0 2px 4px rgba(21, 101, 192, 0.2);
 }
 
+/* 游戏控制按钮容器 */
+.game-controls {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.game-controls button {
+    margin-bottom: 0;
+    min-width: 100px;
+}
+
+/* 撤销按钮特殊样式 */
+#undo-button {
+    background-color: #FF9800;
+    box-shadow: 0 4px 6px rgba(255, 152, 0, 0.2);
+}
+
+#undo-button:hover:not(:disabled) {
+    background-color: #F57C00;
+    box-shadow: 0 6px 12px rgba(255, 152, 0, 0.3);
+}
+
+#undo-button:disabled {
+    background-color: #BDBDBD;
+    color: #757575;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 2px 4px rgba(189, 189, 189, 0.2);
+}
+
+#undo-button:disabled:hover {
+    background-color: #BDBDBD;
+    transform: none;
+    box-shadow: 0 2px 4px rgba(189, 189, 189, 0.2);
+}
+
 /* 游戏板样式 */
 .game-board {
     background-color: #1976D2;
@@ -445,6 +484,19 @@ button:active {
 
 .shake {
     animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* 撤销动画 */
+@keyframes undoAnimation {
+    0% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(0.95) rotate(-2deg); }
+    50% { transform: scale(1.05) rotate(2deg); }
+    75% { transform: scale(0.98) rotate(-1deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+.undo-animation {
+    animation: undoAnimation 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* 响应式设计 */

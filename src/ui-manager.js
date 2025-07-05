@@ -21,6 +21,7 @@ export class UIManager {
         this.finalScoreElement = document.getElementById('final-score');
         this.newGameButton = document.getElementById('new-game');
         this.retryButton = document.getElementById('retry');
+        this.undoButton = document.getElementById('undo-button');
         this.backgroundContainer = document.querySelector('.background-container');
         this.backgroundOptions = document.querySelector('.background-options');
         this.gameTitle = document.getElementById('game-title');
@@ -208,7 +209,7 @@ export class UIManager {
     updateScore(score, bestScore) {
         const oldScore = parseInt(this.scoreElement.textContent);
         this.scoreElement.textContent = score;
-        
+
         // 添加分数变化动画
         if (score > oldScore) {
             this.scoreElement.classList.add('score-change');
@@ -216,8 +217,28 @@ export class UIManager {
                 this.scoreElement.classList.remove('score-change');
             }, 600);
         }
-        
+
         this.bestScoreElement.textContent = bestScore;
+    }
+
+    // 更新撤销按钮状态
+    updateUndoButton(canUndo) {
+        if (this.undoButton) {
+            this.undoButton.disabled = !canUndo;
+            if (canUndo) {
+                this.undoButton.classList.remove('disabled');
+            } else {
+                this.undoButton.classList.add('disabled');
+            }
+        }
+    }
+
+    // 显示撤销动画效果
+    showUndoAnimation() {
+        this.gameBoard.classList.add('undo-animation');
+        setTimeout(() => {
+            this.gameBoard.classList.remove('undo-animation');
+        }, 300);
     }
 
     // 显示最高分更新动画

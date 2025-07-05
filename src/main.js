@@ -15,6 +15,24 @@ function initializeGame() {
     uiManager.initializeUI();
     uiManager.updateUI(gameState.grid);
     uiManager.updateScore(gameState.score, gameState.bestScore);
+    uiManager.updateUndoButton(gameState.canUndo);
+}
+
+// 处理撤销操作
+function handleUndo() {
+    if (game.isGameOver) return;
+
+    const undoSuccess = game.undo();
+    if (undoSuccess) {
+        // 更新UI
+        const gameState = game.getGameState();
+        uiManager.updateUI(gameState.grid);
+        uiManager.updateScore(gameState.score, gameState.bestScore);
+        uiManager.updateUndoButton(gameState.canUndo);
+
+        // 显示撤销动画
+        uiManager.showUndoAnimation();
+    }
 }
 
 // 处理键盘事件
@@ -29,19 +47,30 @@ function handleKeyPress(event) {
         return;
     }
 
+    // 处理撤销快捷键 (Ctrl+Z 或 Cmd+Z)
+    if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
+        event.preventDefault();
+        handleUndo();
+        return;
+    }
+
     let moveResult = null;
 
     switch (event.key) {
         case 'ArrowUp':
+            game.saveCurrentState();
             moveResult = game.moveUp();
             break;
         case 'ArrowDown':
+            game.saveCurrentState();
             moveResult = game.moveDown();
             break;
         case 'ArrowLeft':
+            game.saveCurrentState();
             moveResult = game.moveLeft();
             break;
         case 'ArrowRight':
+            game.saveCurrentState();
             moveResult = game.moveRight();
             break;
         case 'Escape':
@@ -79,13 +108,19 @@ function handleMoveResult(moveResult) {
             uiManager.showBestScoreUpdate();
         }
 
+        // 更新撤销按钮状态
+        uiManager.updateUndoButton(gameState.canUndo);
+
         // 检查游戏是否结束
         if (!game.canMove()) {
             const gameOverResult = game.gameOver();
             uiManager.showGameOver(gameOverResult.finalScore);
         }
     } else {
-        // 无效移动时添加震动效果
+        // 无效移动时添加震动效果，并清除保存的状态
+        game.previousState = null;
+        game.canUndo = false;
+        uiManager.updateUndoButton(false);
         uiManager.showInvalidMoveAnimation();
     }
 }
@@ -93,6 +128,9 @@ function handleMoveResult(moveResult) {
 // 处理滑动事件
 function handleSwipe(direction) {
     if (game.isGameOver) return;
+
+    // 在移动前保存状态
+    game.saveCurrentState();
 
     let moveResult = null;
 
@@ -124,8 +162,11 @@ function setupEventListeners() {
     // 按钮事件
     const newGameButton = document.getElementById('new-game');
     const retryButton = document.getElementById('retry');
+    const undoButton = document.getElementById('undo-button');
+
     newGameButton.addEventListener('click', initializeGame);
     retryButton.addEventListener('click', initializeGame);
+    undoButton.addEventListener('click', handleUndo);
 
     // 触摸滑动事件
     uiManager.setupTouchEvents(handleSwipe);
