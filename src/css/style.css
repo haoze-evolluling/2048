@@ -228,17 +228,17 @@ button:active {
 }
 
 /* 不同数值的方块颜色 */
-.tile-2 { background-color: #90CAF9; }
-.tile-4 { background-color: #64B5F6; }
-.tile-8 { background-color: #42A5F5; }
-.tile-16 { background-color: #2196F3; }
-.tile-32 { background-color: #1E88E5; }
-.tile-64 { background-color: #1976D2; }
-.tile-128 { background-color: #1565C0; }
-.tile-256 { background-color: #0D47A1; }
-.tile-512 { background-color: #0D47A1; }
-.tile-1024 { background-color: #0D47A1; font-size: 20px; }
-.tile-2048 { background-color: #0D47A1; font-size: 20px; }
+.tile-2 { background-color: #FFE066; color: #333; }
+.tile-4 { background-color: #FFB347; color: #333; }
+.tile-8 { background-color: #FF6F61; color: white; }
+.tile-16 { background-color: #F44336; color: white; }
+.tile-32 { background-color: #9C27B0; color: white; }
+.tile-64 { background-color: #3F51B5; color: white; }
+.tile-128 { background-color: #2196F3; color: white; }
+.tile-256 { background-color: #4CAF50; color: white; }
+.tile-512 { background-color: #69F0AE; color: #333; }
+.tile-1024 { background-color: #00BCD4; color: white; font-size: 20px; }
+.tile-2048 { background-color: #FFD700; color: #333; font-size: 20px; }
 
 /* 游戏结束样式 */
 .game-over {
