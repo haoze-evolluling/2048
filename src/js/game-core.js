@@ -12,6 +12,7 @@ class Game2048 {
         // 撤销功能相关属性
         this.previousState = null;
         this.canUndo = false;
+        this.undoCount = 3; // 增加撤销次数限制
 
         this.loadBestScore();
     }
@@ -27,8 +28,10 @@ class Game2048 {
         // 重置撤销相关状态
         this.previousState = null;
         this.canUndo = false;
+        this.undoCount = 3; // 重置撤销次数
 
-        // 生成两个初始方块
+        // 生成三个初始方块，而不是两个
+        this.generateNewTile();
         this.generateNewTile();
         this.generateNewTile();
 
@@ -38,7 +41,8 @@ class Game2048 {
             bestScore: this.bestScore,
             isGameOver: this.isGameOver,
             isWon: this.isWon,
-            canUndo: this.canUndo
+            canUndo: this.canUndo,
+            undoCount: this.undoCount
         };
     }
 
@@ -61,8 +65,8 @@ class Game2048 {
         // 随机选择一个空位
         const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
         
-        // 90%的概率生成2，10%的概率生成4
-        this.grid[randomCell.row][randomCell.col] = Math.random() < 0.9 ? 2 : 4;
+        // 95%的概率生成2，5%的概率生成4
+        this.grid[randomCell.row][randomCell.col] = Math.random() < 0.95 ? 2 : 4;
         
         return { row: randomCell.row, col: randomCell.col };
     }
@@ -377,7 +381,7 @@ class Game2048 {
 
     // 撤销到上一个状态
     undo() {
-        if (!this.canUndo || !this.previousState) {
+        if (!this.canUndo || !this.previousState || this.undoCount <= 0) {
             return false;
         }
 
@@ -386,6 +390,9 @@ class Game2048 {
         this.score = this.previousState.score;
         this.isGameOver = false;
 
+        // 减少撤销次数
+        this.undoCount--;
+        
         // 清除撤销状态
         this.previousState = null;
         this.canUndo = false;
@@ -395,7 +402,7 @@ class Game2048 {
 
     // 检查是否可以撤销
     getCanUndo() {
-        return this.canUndo;
+        return this.canUndo && this.undoCount > 0;
     }
 
     // 获取当前游戏状态
@@ -406,7 +413,8 @@ class Game2048 {
             bestScore: this.bestScore,
             isGameOver: this.isGameOver,
             isWon: this.isWon,
-            canUndo: this.canUndo
+            canUndo: this.canUndo,
+            undoCount: this.undoCount
         };
     }
 }

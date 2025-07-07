@@ -13,7 +13,7 @@ function initializeGame() {
     uiManager.initializeUI();
     uiManager.updateUI(gameState.grid);
     uiManager.updateScore(gameState.score, gameState.bestScore);
-    uiManager.updateUndoButton(gameState.canUndo);
+    uiManager.updateUndoButton(gameState.canUndo, gameState.undoCount);
 }
 
 // 处理撤销操作
@@ -26,7 +26,7 @@ function handleUndo() {
         const gameState = game.getGameState();
         uiManager.updateUI(gameState.grid);
         uiManager.updateScore(gameState.score, gameState.bestScore);
-        uiManager.updateUndoButton(gameState.canUndo);
+        uiManager.updateUndoButton(gameState.canUndo, gameState.undoCount);
 
         // 显示撤销动画
         uiManager.showUndoAnimation();
@@ -112,7 +112,7 @@ function handleMoveResult(moveResult) {
         }
 
         // 更新撤销按钮状态
-        uiManager.updateUndoButton(gameState.canUndo);
+        uiManager.updateUndoButton(gameState.canUndo, gameState.undoCount);
 
         // 检查是否胜利
         if (game.checkWin()) {
@@ -129,7 +129,7 @@ function handleMoveResult(moveResult) {
         // 无效移动时添加震动效果，并清除保存的状态
         game.previousState = null;
         game.canUndo = false;
-        uiManager.updateUndoButton(false);
+        uiManager.updateUndoButton(false, game.undoCount);
         uiManager.showInvalidMoveAnimation();
     }
 }

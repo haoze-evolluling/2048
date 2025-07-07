@@ -449,13 +449,17 @@ class UIManager {
     }
 
     // 更新撤销按钮状态
-    updateUndoButton(canUndo) {
+    updateUndoButton(canUndo, undoCount = 0) {
         if (this.undoButton) {
             this.undoButton.disabled = !canUndo;
             if (canUndo) {
                 this.undoButton.classList.remove('disabled');
+                // 显示剩余撤销次数
+                this.undoButton.innerHTML = `撤销 (${undoCount})`;
             } else {
                 this.undoButton.classList.add('disabled');
+                // 如果没有撤销次数，显示0
+                this.undoButton.innerHTML = undoCount > 0 ? `撤销 (${undoCount})` : '撤销 (0)';
             }
         }
     }
